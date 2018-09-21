@@ -38,28 +38,28 @@ always @(*) begin
 end
 
 // Sorting module
-max max_0(in_n0, in_n1, 2'b00, 2'b01, sort_n0, temp_max[0], temp_max_idx[0]);
+max max_0(in_n0, in_n1, 2'b00, 2'b01, temp_max[0], temp_max_idx[0]);
 max max_1(temp_max[0], in_n2, temp_max_idx[0], 2'b10, temp_max[1], temp_max_idx[1]);
 max max_2(temp_max[1], in_n3, temp_max_idx[1], 2'b11, sort_n0, max_idx);
 
-min min_0(in_n0, in_n1, 2'b00, 2'b01, sort_n0, temp_min[0], temp_min_idx[0]);
+min min_0(in_n0, in_n1, 2'b00, 2'b01, temp_min[0], temp_min_idx[0]);
 min min_1(temp_min[0], in_n2, temp_min_idx[0], 2'b10, temp_min[1], temp_min_idx[1]);
-min min_2(temp_min[1], in_n3, temp_min_idx[1], 2'b11, sort_n4, min_idx);
+min min_2(temp_min[1], in_n3, temp_min_idx[1], 2'b11, sort_n3, min_idx);
 
 mux_4_3 mux_4_3_0(
 				{in_n0, in_n1, in_n2, in_n3}, 
 				{2'b00, 2'b01, 2'b10, 2'b11},
 				max_idx, 
-				mux_num_out_0,
-				mux_idx_out_0
+				{mux_num_out_0[0], mux_num_out_0[1], mux_num_out_0[2]},
+				{mux_idx_out_0[0], mux_idx_out_0[1], mux_idx_out_0[2]}
 				); 
 
 mux_3_2 mux_3_2_0(
-				mux_num_out_0, 
-				mux_idx_out_0,
+				{mux_num_out_0[0], mux_num_out_0[1], mux_num_out_0[2]},
+				{mux_idx_out_0[0], mux_idx_out_0[1], mux_idx_out_0[2]},
 				min_idx, 
-				mux_num_out_1,
-				mux_idx_out_1
+				{mux_num_out_1[0], mux_num_out_1[1]},
+				{mux_idx_out_1[0], mux_idx_out_1[1]}
 				);
 
 compare compare_0(mux_num_out_1[0], mux_num_out_1[1], sort_n1, sort_n2);
@@ -76,29 +76,34 @@ module mux_4_3 (
 		idx_out
 	);
 
-input wire [2:0] num[0:3];
-input wire [1:0] idx[0:3];
+input wire [15:0] num;
+input wire [7:0] idx;
 input wire [1:0] sel_idx;
-output wire [2:0] num_out[0:2];
-output wire [1:0] idx_out[0:2];
 
+wire [3:0] temp_num [0:3];
+wire [1:0] temp_idx [0:3];
+
+output reg [11:0] num_out; // Packing 3 4-bit num into a 12-bit array, num[0:2]
+output reg [5:0] idx_out; // Packing 3 2-bit idx into a 6-bit array, idx[0:2]
+
+// Unpacking
+assign {temp_num[0], temp_num[1], temp_num[2], temp_num[3]} = num;
+assign {temp_idx[0], temp_idx[1], temp_idx[2], temp_idx[3]} = idx;
 
 always @(*) begin
-	if (sel_idx == idx[0]) begin
-		{num_out[0], num_out[1], num_out[2]} = {num[1], num[2], num[3]};
-		{idx_out[0], idx_out[1], idx_out[2]} = {idx[1], idx[2], idx[3]};
-	end else if (sel_idx == idx[1]) begin
-		{num_out[0], num_out[1], num_out[2]} = {num[0], num[2], num[3]};
-		{idx_out[0], idx_out[1], idx_out[2]} = {idx[0], idx[2], idx[3]};
-	end else if (sel_idx == idx[2]) begin
-		{num_out[0], num_out[1], num_out[2]} = {num[0], num[1], num[3]};
-		{idx_out[0], idx_out[1], idx_out[2]} = {idx[0], idx[1], idx[3]};
+	if (sel_idx == temp_idx[0]) begin
+		num_out = {temp_num[1], temp_num[2], temp_num[3]};
+		idx_out = {temp_idx[1], temp_idx[2], temp_idx[3]};
+	end else if (sel_idx == temp_idx[1]) begin
+		num_out = {temp_num[0], temp_num[2], temp_num[3]};
+		idx_out = {temp_idx[0], temp_idx[2], temp_idx[3]};
+	end else if (sel_idx == temp_idx[2]) begin
+		num_out = {temp_num[0], temp_num[1], temp_num[3]};
+		idx_out = {temp_idx[0], temp_idx[1], temp_idx[3]};
 	end else begin
-		{num_out[0], num_out[1], num_out[2]} = {num[0], num[1], num[2]};
-		{idx_out[0], idx_out[1], idx_out[2]} = {idx[0], idx[1], idx[2]};
+		num_out = {temp_num[0], temp_num[1], temp_num[2]};
+		idx_out = {temp_idx[0], temp_idx[1], temp_idx[2]};
 	end	
-end	
-
 end
 
 endmodule
@@ -111,23 +116,30 @@ module mux_3_2 (
 		idx_out
 	);
 
-input wire [2:0] num[0:2];
-input wire [1:0] idx[0:2];
+input wire [11:0] num;
+input wire [5:0] idx;
 input wire [1:0] sel_idx;
-output wire [2:0] num_out[0:1];
-output wire [1:0] idx_out[0:1];
 
+wire [3:0] temp_num [0:2];
+wire [1:0] temp_idx [0:2];
+
+output reg [7:0] num_out; // Packing 3 4-bit num into a 12-bit array, num[0:2]
+output reg [3:0] idx_out; // Packing 3 2-bit idx into a 6-bit array, idx[0:2]
+
+// Unpacking
+assign {temp_num[0], temp_num[1], temp_num[2]} = num;
+assign {temp_idx[0], temp_idx[1], temp_idx[2]} = idx;
 
 always @(*) begin
-	if (sel_idx == idx[0]) begin
-		{num_out[0], num_out[1]} = {num[1], num[2]};
-		{idx_out[0], idx_out[1]} = {idx[1], idx[2]};
-	end else if (sel_idx == idx[1]) begin
-		{num_out[0], num_out[1]} = {num[0], num[2]};
-		{idx_out[0], idx_out[1]} = {idx[0], idx[2]};
+	if (sel_idx == temp_idx[0]) begin
+		num_out = {temp_num[1], temp_num[2]};
+		idx_out = {temp_idx[1], temp_idx[2]};
+	end else if (sel_idx == temp_idx[1]) begin
+		num_out = {temp_num[0], temp_num[2]};
+		idx_out = {temp_idx[0], temp_idx[2]};
 	end else begin
-		{num_out[0], num_out[1]} = {num[0], num[1]};
-		{idx_out[0], idx_out[1]} = {idx[0], idx[1]};
+		num_out = {temp_num[0], temp_num[1]};
+		idx_out = {temp_idx[0], temp_idx[1]};
 	end	
 end
 
@@ -144,10 +156,10 @@ module max (
 	max_idx
 	);
 
-input [3:0] num_1, num_2;
-input [1:0] idx_1, idx_2;
-output [3:0] max_num;
-output [1:0] max_idx;
+input wire [3:0] num_1, num_2;
+input wire [1:0] idx_1, idx_2;
+output reg [3:0] max_num;
+output reg [1:0] max_idx;
 
 
 always @(*) begin
@@ -172,10 +184,10 @@ module min (
 	min_idx
 	);
 
-input [3:0] num_1, num_2;
-input [1:0] idx_1, idx_2;
-output [3:0] min_num;
-output [1:0] min_idx;
+input wire [3:0] num_1, num_2;
+input wire [1:0] idx_1, idx_2;
+output reg [3:0] min_num;
+output reg [1:0] min_idx;
 
 always @(*) begin
 	if (num_1 > num_2) begin
@@ -197,8 +209,8 @@ module compare (
 		min_num
 	);
 
-input [3:0] num_1, num_2;
-output [3:0] max_num, min_num;
+input wire [3:0] num_1, num_2;
+output reg [3:0] max_num, min_num;
 
 
 always @(*) begin
