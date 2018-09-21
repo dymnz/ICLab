@@ -82,6 +82,8 @@ input wire [1:0] sel_idx;
 output wire [2:0] num_out[0:2];
 output wire [1:0] idx_out[0:2];
 
+
+always @(*) begin
 	if (sel_idx == idx[0]) begin
 		{num_out[0], num_out[1], num_out[2]} = {num[1], num[2], num[3]};
 		{idx_out[0], idx_out[1], idx_out[2]} = {idx[1], idx[2], idx[3]};
@@ -95,6 +97,8 @@ output wire [1:0] idx_out[0:2];
 		{num_out[0], num_out[1], num_out[2]} = {num[0], num[1], num[2]};
 		{idx_out[0], idx_out[1], idx_out[2]} = {idx[0], idx[1], idx[2]};
 	end	
+end	
+
 end
 
 endmodule
@@ -113,16 +117,20 @@ input wire [1:0] sel_idx;
 output wire [2:0] num_out[0:1];
 output wire [1:0] idx_out[0:1];
 
-if (sel_idx == idx[0]) begin
-	{num_out[0], num_out[1]} = {num[1], num[2]};
-	{idx_out[0], idx_out[1]} = {idx[1], idx[2]};
-end else if (sel_idx == idx[1]) begin
-	{num_out[0], num_out[1]} = {num[0], num[2]};
-	{idx_out[0], idx_out[1]} = {idx[0], idx[2]};
-end else begin
-	{num_out[0], num_out[1]} = {num[0], num[1]};
-	{idx_out[0], idx_out[1]} = {idx[0], idx[1]};
-end	
+
+always @(*) begin
+	if (sel_idx == idx[0]) begin
+		{num_out[0], num_out[1]} = {num[1], num[2]};
+		{idx_out[0], idx_out[1]} = {idx[1], idx[2]};
+	end else if (sel_idx == idx[1]) begin
+		{num_out[0], num_out[1]} = {num[0], num[2]};
+		{idx_out[0], idx_out[1]} = {idx[0], idx[2]};
+	end else begin
+		{num_out[0], num_out[1]} = {num[0], num[1]};
+		{idx_out[0], idx_out[1]} = {idx[0], idx[1]};
+	end	
+end
+
 
 endmodule
 	
