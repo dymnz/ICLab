@@ -32,58 +32,121 @@ Reduce_mean rm_0(
 
 always @(*) begin
 	// Select sorting output
-	case (opt[0])
-		1'b0: begin
-			n0 <= in_n0;
-			n1 <= in_n1;
-			n2 <= in_n2;
-			n3 <= in_n3;
-		end
-		1'b1: begin
-			n0 <= sort_n0;
-			n1 <= sort_n1;
-			n2 <= sort_n2;
-			n3 <= sort_n3;			
-		end
-	endcase
+	case (opt)
+		3'b000: begin
+			n0 = in_n0;
+			n1 = in_n1;
+			n2 = in_n2;
+			n3 = in_n3;		
 
-	// Select reduce mean
-	case (opt[1])
-		1'b0: begin
-			ar_n0 <= n0;
-			ar_n1 <= n1;
-			ar_n2 <= n2;
-			ar_n3 <= n3;	
-		end
-		1'b1: begin
-			ar_n0 <= rm_n0;
-			ar_n1 <= rm_n1;
-			ar_n2 <= rm_n2;
-			ar_n3 <= rm_n3;				
-		end
-	endcase	
+			ar_n0 = n0;
+			ar_n1 = n1;
+			ar_n2 = n2;
+			ar_n3 = n3;	
 
-	// Select arithmatic op
-	case (opt[2])
-		1'b0: begin
+			out_n = (ar_n3 + ar_n2) * ar_n1;				
+		end // 3'b000:
+
+		3'b001: begin
+			n0 = sort_n0;
+			n1 = sort_n1;
+			n2 = sort_n2;
+			n3 = sort_n3;	
+
+			ar_n0 = n0;
+			ar_n1 = n1;
+			ar_n2 = n2;
+			ar_n3 = n3;	
+
 			out_n = (ar_n3 + ar_n2) * ar_n1;
-		end
-		1'b1: begin
-			out_n = (2 * ar_n1 * ar_n0) + ar_n3;
-		end
-	endcase	
+		end // 3'b001:
+
+		3'b010: begin
+			n0 = in_n0;
+			n1 = in_n1;
+			n2 = in_n2;
+			n3 = in_n3;		
+
+			ar_n0 = rm_n0;
+			ar_n1 = rm_n1;
+			ar_n2 = rm_n2;
+			ar_n3 = rm_n3;	
+
+			out_n = (ar_n3 + ar_n2) * ar_n1;			
+		end // 3'b010:
+
+		3'b011:	begin
+			n0 = sort_n0;
+			n1 = sort_n1;
+			n2 = sort_n2;
+			n3 = sort_n3;	
+
+			ar_n0 = rm_n0;
+			ar_n1 = rm_n1;
+			ar_n2 = rm_n2;
+			ar_n3 = rm_n3;	
+			
+			out_n = (ar_n3 + ar_n2) * ar_n1;	
+		end // 3'b011:
+
+		3'b100:	begin
+			n0 = in_n0;
+			n1 = in_n1;
+			n2 = in_n2;
+			n3 = in_n3;		
+
+			ar_n0 = n0;
+			ar_n1 = n1;
+			ar_n2 = n2;
+			ar_n3 = n3;	
+
+			out_n = (2 * ar_n1 * ar_n0) + ar_n3;	
+		end // 3'b100:
+
+		3'b101:	begin
+			n0 = sort_n0;
+			n1 = sort_n1;
+			n2 = sort_n2;
+			n3 = sort_n3;	
+
+			ar_n0 = n0;
+			ar_n1 = n1;
+			ar_n2 = n2;
+			ar_n3 = n3;	
+
+			out_n = (2 * ar_n1 * ar_n0) + ar_n3;	
+		end // 3'b101:
+
+		3'b110:	begin
+			n0 = in_n0;
+			n1 = in_n1;
+			n2 = in_n2;
+			n3 = in_n3;		
+
+			ar_n0 = rm_n0;
+			ar_n1 = rm_n1;
+			ar_n2 = rm_n2;
+			ar_n3 = rm_n3;
+
+			out_n = (2 * ar_n1 * ar_n0) + ar_n3;	
+		end // 3'b110:				
+
+		3'b111:	begin
+			n0 = sort_n0;
+			n1 = sort_n1;
+			n2 = sort_n2;
+			n3 = sort_n3;		
+
+			ar_n0 = rm_n0;
+			ar_n1 = rm_n1;
+			ar_n2 = rm_n2;
+			ar_n3 = rm_n3;
+
+			out_n = (2 * ar_n1 * ar_n0) + ar_n3;	
+		end // 3'b111:
+
+	endcase
 end
-
-
-always @(*) begin
-	
-end
-
-
-always @(*) begin
-
-end
-
 
 endmodule
 
