@@ -29,9 +29,8 @@ Reduce_mean rm_0(
 );
 
 
-
+// Select sorting output
 always @(*) begin
-	// Select sorting output
 	case (opt[0])
 		1'b0: begin
 			n0 <= in_n0;
@@ -46,8 +45,10 @@ always @(*) begin
 			n3 <= sort_n3;			
 		end
 	endcase
+end
 
-	// Select reduce mean
+// Select reduce mean
+always @(*) begin
 	case (opt[1])
 		1'b0: begin
 			ar_n0 <= n0;
@@ -61,9 +62,11 @@ always @(*) begin
 			ar_n2 <= rm_n2;
 			ar_n3 <= rm_n3;				
 		end
-	endcase	
+	endcase
+end
 
-	// Select arithmatic op
+// Select arithmatic op
+always @(*) begin
 	case (opt[2])
 		1'b0: begin
 			out_n = (ar_n3 + ar_n2) * ar_n1;
@@ -71,17 +74,7 @@ always @(*) begin
 		1'b1: begin
 			out_n = (2 * ar_n1 * ar_n0) + ar_n3;
 		end
-	endcase	
-end
-
-
-always @(*) begin
-	
-end
-
-
-always @(*) begin
-
+	endcase
 end
 
 

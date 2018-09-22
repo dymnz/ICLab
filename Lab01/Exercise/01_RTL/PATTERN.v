@@ -22,7 +22,7 @@ input signed[8:0] out_n;
 //================================================================
 reg clk;
 real	CYCLE = `CYCLE_TIME;
-integer PATNUM = 100;
+integer PATNUM = 1000;
 integer seed;
 integer total_latency;
 integer patcount;
