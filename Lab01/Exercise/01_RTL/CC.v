@@ -66,22 +66,12 @@ always @(*) begin
 	// Select arithmatic op
 	case (opt[2])
 		1'b0: begin
-			out_n = (ar_n3 + ar_n2) * ar_n1;
+			out_n <= (ar_n3 + ar_n2) * ar_n1;
 		end
 		1'b1: begin
-			out_n = (2 * ar_n1 * ar_n0) + ar_n3;
+			out_n <= (2 * ar_n1 * ar_n0) + ar_n3;
 		end
 	endcase	
-end
-
-
-always @(*) begin
-	
-end
-
-
-always @(*) begin
-
 end
 
 
