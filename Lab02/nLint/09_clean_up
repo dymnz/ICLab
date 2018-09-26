@@ -1,0 +1,5 @@
+rm -rf *.ds
+rm -rf nLintDB
+rm -rf nLintLog
+rm -rf *~
+rm -rf *.rc
