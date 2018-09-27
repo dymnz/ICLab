@@ -42,6 +42,7 @@
 // 		raise OUT_VALID
 // 		s_ON_3: goto s_RN_0
 
+
 module IMC(
     //Input Port
     clk,
@@ -86,8 +87,8 @@ parameter
 //---------------------------------------------------------------------
 
 reg [3:0] current_state, next_state;
-reg [15:0] a, b, c, d; 
-wire [31:0] det;
+reg [7:0] a, b, c, d; 
+wire [7:0] det;
 wire [31:0] e, f, g, h;
 
 //---------------------------------------------------------------------
@@ -158,13 +159,13 @@ always @(posedge clk) begin
 	OUT <= 14'b0;
 	case (current_state)
 		s_RN_0:			
-			a <= {2'b0, IN, 10'b0};
+			a <= {4'b0, IN};
 		s_RN_1:
-			b <= {2'b0, IN, 10'b0};
+			b <= {4'b0, IN};
 		s_RN_2:
-			c <= {2'b0, IN, 10'b0};			
+			c <= {4'b0, IN};			
 		s_RN_3:
-			d <= {2'b0, IN, 10'b0};
+			d <= {4'b0, IN};
 
 		s_CALC: begin				
 		end
